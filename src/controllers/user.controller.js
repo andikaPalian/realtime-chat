@@ -2,6 +2,9 @@ import User from "../models/user.models.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import fs from "fs/promises";
+import { v2 as cloudinary } from 'cloudinary';
+
 
 const registerUser = async (req, res) => {
     try {
@@ -115,4 +118,61 @@ const loginUser = async (req, res) => {
     }
 }
 
-export {registerUser, loginUser};
+const uploadProfilePicture = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        if (!userId) {
+            return res.status(400).json({
+                message: "User ID is missing"
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: "No file uploaded"
+            });
+        }
+
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path, {
+            use_filename: true,
+            unique_filename: true
+        });
+
+        await fs.unlink(req.file.path);
+
+        const user = await User.findByIdAndUpdate(userId, {
+            profilePicture: result.secure_url,
+            cloudinary_id: result.public_id
+        }, 
+        {new: true});
+        if (!user) {
+            await cloudinary.uploader.destroy(result.public_id);
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Profile picture uploaded successfully",
+            profilePicture: {
+                url: user.profilePicture,
+                cloudinary_id: user.cloudinary_id,
+            }
+        });
+    } catch (error) {
+        console.error("Error during profile picture upload:", error);
+
+        // Hapus file lokal jika upload gagal
+        if (req.file) {
+            await fs.unlink(req.file.path).catch(console.error);
+        }
+
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error.message || "An unexpected error occurred"
+        });
+    }
+}
+
+export {registerUser, loginUser, uploadProfilePicture};

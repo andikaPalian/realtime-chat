@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    cloudinary_id: {
+        type: String,
+        default: "",
     }
 }, {
     timestamps: true,
