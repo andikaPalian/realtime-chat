@@ -118,7 +118,7 @@ const loginUser = async (req, res) => {
     }
 }
 
-const uploadProfilePicture = async (req, res) => {
+const uploadAvatar = async (req, res) => {
     try {
         const userId = req.user.userId;
         if (!userId) {
@@ -142,7 +142,7 @@ const uploadProfilePicture = async (req, res) => {
         await fs.unlink(req.file.path);
 
         const user = await User.findByIdAndUpdate(userId, {
-            profilePicture: result.secure_url,
+            avatar: result.secure_url,
             cloudinary_id: result.public_id
         }, 
         {new: true});
@@ -154,14 +154,14 @@ const uploadProfilePicture = async (req, res) => {
         }
 
         res.status(200).json({
-            message: "Profile picture uploaded successfully",
-            profilePicture: {
-                url: user.profilePicture,
+            message: "Avatar uploaded successfully",
+            avatar: {
+                url: user.avatar,
                 cloudinary_id: user.cloudinary_id,
             }
         });
     } catch (error) {
-        console.error("Error during profile picture upload:", error);
+        console.error("Error during avatar upload:", error);
 
         // Hapus file lokal jika upload gagal
         if (req.file) {
@@ -175,4 +175,4 @@ const uploadProfilePicture = async (req, res) => {
     }
 }
 
-export {registerUser, loginUser, uploadProfilePicture};
+export {registerUser, loginUser, uploadAvatar};

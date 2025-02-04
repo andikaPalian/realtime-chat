@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    profilePicture: {
+    avatar: {
         type: String,
         default: "",
     },
@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema({
     cloudinary_id: {
         type: String,
         default: "",
+    },
+    status: {
+        type: String,
+        enum: ["online", "offline"],
+        default: "offline",
     }
 }, {
     timestamps: true,
