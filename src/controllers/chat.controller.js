@@ -1,6 +1,6 @@
-import Message from "../models/message.models";
-import Chatroom from "../models/chatroom.models";
-import User from "../models/user.models";
+import Message from "../models/message.models.js";
+import Chatroom from "../models/chatroom.models.js";
+import User from "../models/user.models.js";
 
 const getPrivateChatHistory = async (req, res) => {
     try {
