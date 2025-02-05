@@ -7,7 +7,7 @@ const userRouter = express.Router();
 
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
-userRouter.put("/avatar", upload.single("file"), (err, req, res, next) => {
+userRouter.put("/avatar", upload.single("avatar"), (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         return res.status(400).json({message: err.message});
     } else if (err) {
